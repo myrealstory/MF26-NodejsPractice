@@ -1,0 +1,22 @@
+<?xml version = "1.0" ?>
+<persons >
+    <person>
+        <name>
+        <first>John</first>
+        <last>Su</last>
+        </name>
+        <age>30
+        </age>
+    </person>
+    <person name="peter" age="30"/>
+     <person>
+        <name>
+        <first>ghot</first>
+        <last>hantu</last>
+        </name>
+        <age>20
+        </age>
+    </person>
+    <person a="aaaa" b="55gd"/>
+
+</persons>
