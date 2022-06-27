@@ -1,6 +1,8 @@
 require('dotenv').config();
 const express = require('express');
 const app = express();
+const multer = require('multer');
+const upload = multer({dest: 'tmp-uploads'});
 
 app.set('view engine','ejs');
 
@@ -22,12 +24,16 @@ app.post('/try-post',(req,res)=>{ //設定bodyparse ，然後用bodyparse儲存�
     res.json(req.body);
 });
 
+app.post('/try-upload',upload.single('avatar'),(req,res)=>{ 
+    res.json(req.file);
+});
+
 app.route('/post-form')
 .get((req,res)=>{
     res.render('post-form');
 })
 .post((req,res)=>{
-    const {email,passowrd} = req.body;
+    const {email,password} = req.body;
     res.render('post-form',{post: {email,password}});
 })
 
