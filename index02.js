@@ -4,15 +4,30 @@ const express = require("express");
 const multer = require('multer');
 //const upload = multer({dest: 'tmp-uploads'});
 const upload = require(__dirname+ '/modules/upload-images');
+const session = require('express-session');
 
 
 const app = express();
 
 app.set("view engine", "ejs");
+app.set("case sensitive routing", true);
 
 // Top-level middlewares
+
+app.use(session({
+    saveUninitialized: false,
+    resave: false,
+    secret:'dkfdl12fewv923fdmks202r12', // 加密cookie用的
+
+}));
 app.use(express.urlencoded({extended: false}));
 app.use(express.json());
+app.use((req,res,next)=>{
+    // res.json({action : 'Stop'});//這一個跟404 同一個意思，如果在中路下這個就不會執行了。
+    res.locals.shinder = '哈嘍';
+    next(); //如果下這個就會經過這個程式，但因為有next的關係會繼續執行。
+});
+
 
 app.get('/try-qs', (req, res)=>{
     res.json(req.query);
@@ -26,11 +41,11 @@ app.post('/try-post', (req, res)=>{
 
 app.route('/try-post-form')
     .get((req, res)=>{
-        res.render('try-post-form');
+        res.render('post-form');
     })
     .post((req, res)=>{
         const {email, password} = req.body;
-        res.render('try-post-form', {email, password});
+        res.render('post-form', {email, password});
     });
 
 app.post('/try-upload', upload.single('avatar'), (req, res)=>{
@@ -49,6 +64,16 @@ app.get('/try-params1/:action',(req,res)=>{//如果在標籤上放問號的意�
     res.json({'name':3 ,params:req.files});//這是當只有名字的時候才可以指向它
 });
 
+app.get(/^\/hi\/?/i,(req,res)=>{//regular expression 的部分
+    res.json({url: req.url});
+});
+
+app.get((req,res)=>{
+    res.json({url: req.url});
+});
+
+
+
 
 app.get('/try-params1/:action?/:id?',(req,res)=>{//如果在標籤上放問號的意思是可有可無。即時今天不下也沒關係。
     res.json(req.params);
@@ -56,6 +81,15 @@ app.get('/try-params1/:action?/:id?',(req,res)=>{//如果在標籤上放問號�
 
 
 
+app.get('/try-session',(req,res)=>{
+    req.session.my_var=  req.session.my_var || 0;
+    req.session.my_var++;
+    res.json({
+        my_var : req.session.my_var,
+        session: req.session,
+    });
+
+})
 
 
 
@@ -70,7 +104,10 @@ app.get("/", (req, res) => {
     res.render("main", { name: "Shinder" });
 });
 
+
 // ------- static folder -----------
+const adminsRouter = require(__dirname + '/routes/admins');
+app.use('/admins',adminsRouter);
 app.use(express.static("public"));
 app.use("/bootstrap", express.static("node_modules/bootstrap/dist"));
 
