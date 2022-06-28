@@ -1,0 +1,19 @@
+[
+    {
+        "name":"Carl",
+        "age":28,
+        "id":"C003"
+    },
+    {
+        "name":"Flora",
+        "age":29,
+        "id":"C002"
+    },
+    {
+        "name":"Kelvin",
+        "age":30,
+        "id":"C001"
+    }
+
+
+]

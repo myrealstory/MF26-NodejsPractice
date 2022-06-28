@@ -1,0 +1,28 @@
+
+<%- include('parts/html-head') %> <%- include('parts/navbar') %>
+
+<table class="table">
+    <thead>
+      <tr>
+        <th scope="col">NAME</th>
+        <th scope="col">AGE</th>
+        <th scope="col">ID</th>
+      </tr>
+    </thead>
+    <tbody>
+        <% for(let item of rows){%>
+      <tr>  
+        <td><%=item.name %></td>
+        <td><%= item.age %></td>
+        <td><%= item.id %></td>
+      </tr>
+     <% } %>
+    </tbody>
+  </table>
+
+  <%- include('parts/script')%>
+<script>
+    const rows = <%- JSON.stringify(rows) %>;
+
+</script>
+<%- include('parts/html-foot') %>

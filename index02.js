@@ -5,7 +5,13 @@ const multer = require('multer');
 //const upload = multer({dest: 'tmp-uploads'});
 const upload = require(__dirname+ '/modules/upload-images');
 const session = require('express-session');
+const moment = require('moment-timezone');
+const { tz } = require("moment-timezone");
 
+const db = require(__dirname + '/modules/mysql_connect.js'); //資料庫連線的模組
+const MysqlStore = require("express-mysql-session")(session);//把session存進這裡。
+const sessionStore = new MysqlStore({},db);//這裡三個步驟逝固定的。建立sessionStore
+//在這裡做同一管理，為了其他的頁面也可以做到相同的連線。
 
 const app = express();
 
@@ -18,6 +24,10 @@ app.use(session({
     saveUninitialized: false,
     resave: false,
     secret:'dkfdl12fewv923fdmks202r12', // 加密cookie用的
+    store: sessionStore, //因建立了資料庫。所以cookie會把加密用代號存到sql裡面，設立叫store
+    cookie:{
+        maxAge: 1200000,//毫秒 這樣兩分鐘
+     }, //這裡可以設定cookie存活的時間。
 
 }));
 app.use(express.urlencoded({extended: false}));
@@ -91,6 +101,26 @@ app.get('/try-session',(req,res)=>{
 
 })
 
+app.get("/try-json",(req,res)=>{
+    const data = require(__dirname+ '/public/data/data01')//取得json格式的檔案。
+    console.log(data);
+    res.locals.rows = data; //到template的時候會產生了rows這個變數 (bootstrap使用)
+    res.render("try-json"); //render 的地點是來自EJS，因為上面有設定用view去做。
+})
+
+app.get('/try-moment',(req,res)=>{
+    const format = 'YYYY-MM-DD HH:mm:ss';//timezone格式
+    const m1 = moment(); //設定 npm i moment-timezone 
+    const m2 = moment('2022-02-29');//這是不成立的
+
+    res.json({
+        m1:m1.format(format),
+        m1a:tz('Europe/London').format(format),
+        m2:m2.format(format),
+        m2a:m1.tz('Taiwan').format(format),
+        
+    });
+})
 
 
 /*
@@ -122,3 +152,7 @@ app.listen(process.env.PORT, () => {
     console.log(`server started: ${process.env.PORT}`);
     console.log({ NODE_ENV: process.env.NODE_ENV });
 });
+
+//req.query , req.body , req.params , req,files/file , req.session
+
+
