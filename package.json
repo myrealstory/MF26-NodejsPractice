@@ -1,7 +1,6 @@
 {
   "name": "mf26-nodejspractice",
   "version": "1.0.0",
-  "description": "",
   "main": "index.js",
   "scripts": {
     "start": "nodemon index.js",
@@ -38,9 +37,11 @@
     "multer": "^1.4.4",
     "mysql2": "^2.3.3",
     "node-fetch": "^2.6.7",
-    "uuid": "^8.3.2"
+    "uuid": "^8.3.2",
+    "view": "^1.1.1"
   },
   "devDependencies": {
     "nodemon": "^2.0.18"
-  }
+  },
+  "description": ""
 }

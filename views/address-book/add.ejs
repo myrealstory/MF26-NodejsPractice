@@ -1,0 +1,84 @@
+<%- include('../parts/html-head') %> 
+<%- include('../parts/navbar') %>
+
+<div class="container">
+    <div class="row">
+        <div class="col-6">
+            <form action="" name="form1">
+                <div class="mb-3">
+            <label for="exampleFormControlInput1" class="form-label">Name</label>
+            <input type="text"
+             class="form-control"
+             name="name">
+          </div>
+          <div class="mb-3">
+            <label for="exampleFormControlInput1" class="form-label">Email</label>
+            <input type="password"
+             class="form-control"
+             name="email">
+          </div>
+
+          <div class="mb-3">
+            <label for="exampleFormControlInput1" class="form-label">mobile</label>
+            <input type="email"
+             class="form-control"
+             name="mobile">
+          </div>
+
+          <div class="mb-3">
+            <label for="exampleFormControlInput1" class="form-label">birthday</label>
+            <input type="email"
+             class="form-control"
+             name="birthday">
+          </div>
+
+          <div class="mb-3">
+            <label for="exampleFormControlInput1" class="form-label">address</label>
+            <input type="textare"
+             class="form-control"
+             name="address">
+          </div>
+          <div class="mb-3">
+            <label for="exampleFormControlInput1" class="form-label">UserName</label>
+            <input type="text"
+             class="form-control"
+             name="username">
+          </div>
+
+         
+
+          <button class="btn btn-primary" type="submit" > SUBMIT</button>
+            </form>
+        </div>
+        
+    </div>
+</div> 
+
+<%- include('../parts/script')%>
+
+<script>
+    function sendForm(event){
+        event.preventDefault();
+        const fd = new FormData(document.form1);
+        
+        const dataObj = {};
+        for(let i of fd.entries()){
+            console.log(i);
+            dataObj[i[0]]= i[1];
+        }
+        console.log(dataObj);
+
+        const usp = new URLSearchParams(fd);
+        console.log(usp.toString());
+            fetch('',{
+                method: 'POST',
+                body: fd,
+            })
+            .then(r=>r.json())
+            .then(obj=>{
+                console.log(obj);
+            })
+        }
+</script>
+
+<%- include('../parts/html-foot') %>

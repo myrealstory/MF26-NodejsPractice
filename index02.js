@@ -13,6 +13,11 @@ const MysqlStore = require("express-mysql-session")(session);//把session存進�
 const sessionStore = new MysqlStore({},db);//這裡三個步驟逝固定的。建立sessionStore
 //在這裡做同一管理，為了其他的頁面也可以做到相同的連線。
 
+const { toDateString,
+    toDatetimeString,
+    } = require(__dirname + '/modules/date-tools.js');
+
+
 const app = express();
 
 app.set("view engine", "ejs");
@@ -35,6 +40,9 @@ app.use(express.json());
 app.use((req,res,next)=>{
     // res.json({action : 'Stop'});//這一個跟404 同一個意思，如果在中路下這個就不會執行了。
     res.locals.shinder = '哈嘍';
+    res.locals.toDateString = toDateString;
+    res.locals.toDatetimeString = toDatetimeString;
+
     next(); //如果下這個就會經過這個程式，但因為有next的關係會繼續執行。
 });
 
@@ -100,6 +108,9 @@ app.get('/try-session',(req,res)=>{
     });
 
 })
+
+app.use('/address_book',require(__dirname + '/routes/address_book'))
+
 
 app.get("/try-json",(req,res)=>{
     const data = require(__dirname+ '/public/data/data01')//取得json格式的檔案。
