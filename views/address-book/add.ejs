@@ -3,33 +3,37 @@
 
 <div class="container">
     <div class="row">
-        <div class="col-6">
-            <form action="" name="form1">
+        <div class="col-lg-6">
+            <form action="" name="form1" onsubmit="sendFrom(event)">
                 <div class="mb-3">
             <label for="exampleFormControlInput1" class="form-label">Name</label>
             <input type="text"
              class="form-control"
              name="name">
+             <div class="form-text"></div>
           </div>
           <div class="mb-3">
             <label for="exampleFormControlInput1" class="form-label">Email</label>
-            <input type="password"
+            <input type="email"
              class="form-control"
              name="email">
+             <div class="form-text"></div>
           </div>
 
           <div class="mb-3">
             <label for="exampleFormControlInput1" class="form-label">mobile</label>
-            <input type="email"
+            <input type="text"
              class="form-control"
              name="mobile">
+             <div class="form-text"></div>
           </div>
 
           <div class="mb-3">
             <label for="exampleFormControlInput1" class="form-label">birthday</label>
-            <input type="email"
+            <input type="date"
              class="form-control"
              name="birthday">
+             <div class="form-text"></div>
           </div>
 
           <div class="mb-3">
@@ -37,15 +41,8 @@
             <input type="textare"
              class="form-control"
              name="address">
-          </div>
-          <div class="mb-3">
-            <label for="exampleFormControlInput1" class="form-label">UserName</label>
-            <input type="text"
-             class="form-control"
-             name="username">
-          </div>
-
-         
+             <div class="form-text"></div>
+          </div>         
 
           <button class="btn btn-primary" type="submit" > SUBMIT</button>
             </form>
@@ -57,8 +54,12 @@
 <%- include('../parts/script')%>
 
 <script>
+    const Joi =joi;
+
     function sendForm(event){
         event.preventDefault();
+
+        
         const fd = new FormData(document.form1);
         
         const dataObj = {};
@@ -68,8 +69,34 @@
         }
         console.log(dataObj);
 
+
+        const schema = Joi.object({ // 輸入判斷是否符合格式 Joi
+        name: Joi.string()
+            .min(3)
+            .required()
+            .label('這裡要填寫名字'),
+        email: Joi.string()
+            .email({tlds: false})
+            .required(),
+        mobile: Joi.string(),
+        birthday: Joi.any(),
+        address:Joi.string(),
+    });
+
         const usp = new URLSearchParams(fd);
         console.log(usp.toString());
+            // fetch('',{
+            //     method: 'POST',
+            //     body: JSON.stringify(dataObj),
+            //     headers:{
+            //         'Content-Type': 'application/x-www-form-urlencoded',
+            //     },
+            // })
+            // .then(r=>r.json())
+            // .then(obj=>{
+            //     console.log(obj);
+            // })
+
             fetch('',{
                 method: 'POST',
                 body: fd,

@@ -151,6 +151,7 @@ const adminsRouter = require(__dirname + '/routes/admins');
 app.use('/admins',adminsRouter);
 app.use(express.static("public"));
 app.use("/bootstrap", express.static("node_modules/bootstrap/dist"));
+app.use("/joi", express.static("node_modules/joi/dist"));//這裡做設計路徑
 
 // ------- 404 -----------
 app.use((req, res) => {

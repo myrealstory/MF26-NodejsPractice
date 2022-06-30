@@ -4,11 +4,13 @@ const db = require(__dirname + '/../modules/mysql_connect');
 const { toDateString,
     toDatetimeString, } = require(__dirname + '/../modules/date-tools.js');
 const moment = require('moment-timezone');
+const Joi = require('joi');
 const upload = require(__dirname + '/../modules/upload-images')
 
 
 const router = express.Router();//建立router 物件
 //router本身是一個middleway
+
 
 const getListHandler = async (req,res)=>{
 
@@ -81,6 +83,35 @@ const getListHandler = async (req,res)=>{
     return output;
 } 
 
+router.get('/add', async (req,res)=>{
+    res.render('address-book/add');
+    
+} ); 
+router.post('/add', upload.none(), async (req, res) => { // Joi 可以用來檢驗傳出資料的格式。後端使用。
+    const schema = Joi.object({ // 輸入判斷是否符合格式 Joi
+        name: Joi.string()
+            .min(3)
+            .required()
+            .label('這裡要填寫名字'),
+        email: Joi.string()
+            .email({tlds: false})
+            .required(),
+        mobile: Joi.string(),
+        birthday: Joi.any(),
+        address:Joi.string(),
+    });
+    console.log(schema.validate(req.body, {abortEarly: false}));
+    // res.json(schema.validate(req.body, {abortEarly: false}));
+
+    const sql = "INSERT INTO `address_book` SET ?"; //這不是一個完整的sql值，但這裡mysql2可以幫忙用成完整的值。但是mysql裡面不可以有一些雜七雜八的值。因為他會幫你做填寫。
+    const inserData = { ...req.body, created_at: new Date() };
+    const [result] = await db.query(sql, [inserData]);
+
+    
+    res.json(result);
+    
+} ); 
+
 router.get('/', async (req,res)=>{
     // res.json( {
     //     url: req.url,
@@ -107,14 +138,7 @@ router.get('/api', async (req,res)=>{
     res.json('address-book/Main', output);
 }); //如果是 /api的話就只呈現json格式
 
-router.get('/add', async (req,res)=>{
-    res.render('address-book/add');
-    
-} ); 
-router.post('/add', upload.none(), async (req, res) => {
-    res.json(req.body);
-    
-} ); 
+
 
 
 module.exports = router;
