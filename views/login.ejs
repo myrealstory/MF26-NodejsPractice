@@ -1,0 +1,95 @@
+<%- include('parts/html-head') %> <%- include('parts/navbar') %>
+
+<div class="container">
+
+        <form onsubmit="sendForm(event)" name="form1">
+            <div class="mb-3">
+                <label for="exampleFormControlInput1" class="form-label">Login account</label>
+
+                <input type="text" 
+                class="form-control" 
+                name="account" 
+                value="" >
+
+                <div class="form-text"> </div>
+            </div>
+
+            <div class="mb-3">
+                <label for="exampleFormControlInput1" class="form-label">Password</label>
+
+                <input type="password" 
+                class="form-control" 
+                name="password" 
+                value="" >
+
+                <div class="form-text"> </div>
+              </div>
+              
+             
+              
+              
+              <button type="submit" class="btn btn-primary" >SUBMIT</button>
+        </form>
+        <pre><% JSON.stringify(locals,null,4) %></pre>
+
+</div>
+
+<%- include('parts/script')%>
+<script>
+    function sendForm(event){
+        event.preventDefault();
+
+        // const fd= new FormData(document.form1);
+        const sendObj = {
+            account: document.form1.account.value,
+            password: document.form1.password.value,
+        }
+
+        fetch('',{
+            method: 'POST',
+            body: JSON.stringify(sendObj),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(r=>r.json())
+        .then(obj=>{
+            console.log(obj);
+            if(obj.success){
+                location.href = '/';
+            }else{
+                alert(obj.error);
+            }
+        })
+    }
+// TODO: 欄位格式檢查
+//    function sendForm(event){
+//         event.preventDefault();
+
+        
+//         const fd = new FormData(document.form1);
+        
+//         const dataObj = {};
+//         for(let i of fd.entries()){
+//             console.log(i);
+//             dataObj[i[0]]= i[1];
+//         }
+//         console.log(dataObj);
+
+
+
+//         const usp = new URLSearchParams(fd);
+//         console.log(usp.toString());
+
+//             fetch('',{
+//                 method: 'POST',
+//                 body: fd,
+//             })
+//             .then(r=>r.json())
+//             .then(obj=>{
+//                 console.log(obj);
+//             })
+//         }
+</script>
+
+<%- include('parts/html-foot') %>

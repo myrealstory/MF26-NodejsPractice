@@ -7,11 +7,22 @@ const upload = require(__dirname+ '/modules/upload-images');
 const session = require('express-session');
 const moment = require('moment-timezone');
 const { tz } = require("moment-timezone");
+const bcrypt = require('bcryptjs');
 
 const db = require(__dirname + '/modules/mysql_connect.js'); //資料庫連線的模組
 const MysqlStore = require("express-mysql-session")(session);//把session存進這裡。
 const sessionStore = new MysqlStore({},db);//這裡三個步驟逝固定的。建立sessionStore
 //在這裡做同一管理，為了其他的頁面也可以做到相同的連線。
+
+const cors = require('cors');
+const whitelist = [];
+const corsOption = {
+    Credential: true,
+    origin: (origin, cb) => { 
+        console.log('origin:' + origin);
+        cb(null, true);
+    }
+};
 
 const { toDateString,
     toDatetimeString,
@@ -24,7 +35,7 @@ app.set("view engine", "ejs");
 app.set("case sensitive routing", true);
 
 // Top-level middlewares
-
+app.use(cors(corsOption));
 app.use(session({
     saveUninitialized: false,
     resave: false,
@@ -36,12 +47,13 @@ app.use(session({
 
 }));
 app.use(express.urlencoded({extended: false}));
-app.use(express.json());
+app.use(express.json()); //這個要注意順序
 app.use((req,res,next)=>{
     // res.json({action : 'Stop'});//這一個跟404 同一個意思，如果在中路下這個就不會執行了。
     res.locals.shinder = '哈嘍';
     res.locals.toDateString = toDateString;
     res.locals.toDatetimeString = toDatetimeString;
+    res.locals.session = req.session;
 
     next(); //如果下這個就會經過這個程式，但因為有next的關係會繼續執行。
 });
@@ -65,6 +77,40 @@ app.route('/try-post-form')
         const {email, password} = req.body;
         res.render('post-form', {email, password});
     });
+
+app.route('/login')
+    .get (async (req, res)=>{
+        res.render('login');
+    })
+    .post(async (req, res)=>{
+        const output = {
+            success: false,
+            error: '',
+            code: 0,
+        };
+        const sql = "SELECT * FROM admins WHERE account=?";
+        const [r1] = await db.query(sql, [req.body.account]);
+        // return res.json(r1);
+        if (! r1.length) { //這裡判斷如果賬號欄位沒有寫
+            
+            output.code = 401;
+            output.error = '帳密錯誤';
+            return res.json(output);
+        } 
+       
+        output.success = await bcrypt.compare(req.body.password, r1[0].pass_hash);
+        if (!output.success) { //這裡判斷密碼錯誤 
+            output.code = 402;
+            output.error = '密碼錯誤';
+        } else { 
+            req.session.admin = {
+                sid: r1[0].sid,
+                account: r1[0].account,
+            }
+        }
+
+        res.json(output);
+    });    
 
 app.post('/try-upload', upload.single('avatar'), (req, res)=>{
     res.json(req.file);
@@ -108,6 +154,11 @@ app.get('/try-session',(req,res)=>{
     });
 
 })
+
+app.get('/logout', (req, res) => {
+    delete req.session.admin;
+    res.redirect("/");
+});
 
 app.use('/address_book',require(__dirname + '/routes/address_book'))
 

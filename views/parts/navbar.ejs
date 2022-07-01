@@ -5,13 +5,16 @@
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
-      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <div class="collapse navbar-collapse d-flex justify-content-between" id="navbarSupportedContent">
         <ul class="navbar-nav me-auto mb-2 mb-lg-0">
           <li class="nav-item">
-            <a class="nav-link active" aria-current="page" href="#">Home</a>
+            <a class="nav-link active" aria-current="page" href="/">Home</a>
           </li>
           <li class="nav-item">
             <a class="nav-link" href="#">Link</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/address_book/add">Add-ing</a>
           </li>
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -24,9 +27,25 @@
               <li><a class="dropdown-item" href="#">Something else here</a></li>
             </ul>
           </li>
+          
+        </ul>
+        <ul class="navbar-nav mb-2 mb-lg-0">
+          <% if(session.admin && session.admin.account) { %>
+           
           <li class="nav-item">
-            <a class="nav-link disabled">Disabled</a>
+            <a class="nav-link "> <%= session.admin.account %> </a>
           </li>
+          <li class="nav-item">
+            <a class="nav-link " href="/logout">Logout</a>
+          </li>
+          <% }else { %>
+            <li class="nav-item">
+              <a class="nav-link " href="/login">login</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link " href="#">register</a>
+            </li>
+            <% }%>
         </ul>
         
       </div>
